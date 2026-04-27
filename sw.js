@@ -1,31 +1,15 @@
-const CACHE_NAME = 'ilart-clock-v2';
+const CACHE_NAME = 'ilart-clock-v3';
 
 const urlsToCache = [
   '/IlArtClock/',
   '/IlArtClock/index.html',
-  '/IlArtClock/manifest.json',
-  '/IlArtClock/icon-192.png',
-  '/IlArtClock/icon-512.png'
+  '/IlArtClock/manifest.json'
 ];
 
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
   );
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(name => {
-          if (name !== CACHE_NAME) return caches.delete(name);
-        })
-      );
-    })
-  );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', event => {
