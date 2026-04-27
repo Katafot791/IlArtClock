@@ -1,6 +1,6 @@
 {
   "name": "IlArt Clock",
-  "short_name": "IlArt",
+  "short_name": "IlArt_Clock",
   "display": "standalone",
   "background_color": "#0a0f1a",
   "theme_color": "#0a0f1a",
