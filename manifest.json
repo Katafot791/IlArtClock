@@ -5,12 +5,10 @@
   "lang": "ru",
   "dir": "ltr",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#000000",
-
+  "background_color": "#0a0f1a",
+  "theme_color": "#0a0f1a",
   "start_url": "./index.html",
   "scope": "./",
-
   "icons": [
     {
       "src": "icon-192.png",
