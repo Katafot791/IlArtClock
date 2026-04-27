@@ -1,11 +1,11 @@
 const CACHE_NAME = 'ilart-clock-v2';
 
 const urlsToCache = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icon-192.png',
-  './icon-512.png'
+  '/IlArtClock/',
+  '/IlArtClock/index.html',
+  '/IlArtClock/manifest.json',
+  '/IlArtClock/icon-192.png',
+  '/IlArtClock/icon-512.png'
 ];
 
 self.addEventListener('install', event => {
