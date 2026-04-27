@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0f1a">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>ILART | Dark Studio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+        }
+
+        body {
+            font-family: -apple-system, 'SF Pro Display', 'Inter', system-ui, 'Helvetica Neue', sans-serif;
+            background: radial-gradient(circle at 20% 30%, #0d1117, #05070a);
+            display: flex;
+            align-items: stretch;
+            justify-content: stretch;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .glass-panel {
+            background: rgba(12, 18, 28, 0.65);
+            backdrop-filter: blur(32px) saturate(180%);
+            -webkit-backdrop-filter: blur(32px) saturate(180%);
+            border-radius: 36px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            padding: 22px 24px 28px;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 4px;
+            flex-shrink: 0;
+        }
+
+        .logo h1 {
+            font-weight: 700;
+            font-size: 2rem;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #ffffff, #00f0ff, #b000ff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: shimmer 4s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .status-row {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
+            border-radius: 60px;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.15);
+            margin-bottom: 12px;
+            flex-shrink: 0;
+        }
+
+        .status-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #00f0ff;
+            text-shadow: 0 0 4px #00f0ff;
+        }
+
+        #status {
+            font-weight: 600;
+            font-size: 12px;
+            color: #ff5e6e;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        #status::before {
+            content: "●";
+            font-size: 8px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 44px;
+            border: none;
+            font-weight: 600;
+            font-size: 15px;
+            letter-spacing: 0.3px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(10px);
+            color: white;
+            margin: 6px 0;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        .btn-connect {
+            background: linear-gradient(105deg, #0066ff, #00c3ff);
+            border: none;
+            box-shadow: 0 6px 18px rgba(0, 100, 255, 0.4);
+            font-weight: 700;
+            font-size: 16px;
+            padding: 16px;
+            margin-bottom: 8px;
+            flex-shrink: 0;
+        }
+
+        .btn-sync {
+            background: rgba(0, 247, 176, 0.08);
+            border: 1px solid rgba(0, 247, 176, 0.3);
+            color: #00f7b0;
+        }
+
+        #btn-auto.active {
+            background: rgba(0, 247, 176, 0.2);
+            border: 1px solid #00f7b0;
+            color: #00f7b0;
+            box-shadow: 0 0 15px #00f7b0;
+        }
+
+        .double-buttons {
+            display: flex;
+            gap: 12px;
+            margin: 8px 0 12px;
+            flex-shrink: 0;
+        }
+
+        .double-buttons button {
+            flex: 1;
+            margin: 0;
+            padding: 12px 12px;
+            font-size: 14px;
+        }
+
+        .control-group {
+            margin: 12px 0;
+            flex-shrink: 0;
+        }
+
+        .control-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            color: #b0c4ff;
+            margin-bottom: 8px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 5px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.12);
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            background: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 14px #00f0ff;
+            border: 2px solid #00f0ff;
+            cursor: pointer;
+        }
+
+        .preview-bar {
+            height: 52px;
+            border-radius: 32px;
+            margin-top: 12px;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .action-grid {
+            display: flex;
+            gap: 14px;
+            margin: 14px 0;
+            flex-shrink: 0;
+        }
+
+        .action-grid button {
+            flex: 1;
+            padding: 12px 0;
+            font-size: 14px;
+            background: rgba(20, 30, 55, 0.6);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+        }
+
+        .rainbow-text {
+            background: linear-gradient(135deg, #ff3c00, #ffea00, #00ffaa, #00ccff, #aa00ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .speed-section {
+            margin-top: 12px;
+            flex-shrink: 0;
+        }
+
+        hr {
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #00f0ff, #b000ff, transparent);
+            margin: 18px 0 14px;
+            flex-shrink: 0;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 10px;
+            letter-spacing: 1px;
+            opacity: 0.45;
+            color: #88aaff;
+            margin-top: 6px;
+            flex-shrink: 0;
+        }
+
+        .install-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #00f0ff;
+            color: #0a0f1a;
+            border: none;
+            border-radius: 40px;
+            padding: 12px 24px;
+            font-weight: bold;
+            font-size: 14px;
+            z-index: 9999;
+            box-shadow: 0 0 20px #00f0ff;
+            cursor: pointer;
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="glass-panel">
+        <div class="logo">
+            <h1>ILART<span> CLOCK</span></h1>
+        </div>
+
+        <div class="status-row">
+            <span class="status-label">⚡ BLE</span>
+            <span id="status">OFFLINE</span>
+        </div>
+
+        <button id="main-connect" class="btn-connect" onclick="connect()">🔗 CONNECT DEVICE</button>
+
+        <div class="double-buttons">
+            <button class="btn-sync" onclick="syncTime()">🔄 SYNC TIME</button>
+            <button id="btn-auto" onclick="send('AUTO')">🌙 AUTO BRIGHT</button>
+        </div>
+
+        <div class="control-group">
+            <div class="control-header">
+                <span>💡 BRIGHTNESS</span>
+                <span id="brightnessValue">50%</span>
+            </div>
+            <input type="range" id="brightnessSlider" min="5" max="100" value="50" oninput="updateBrightnessLabel(this.value); send('B' + this.value); document.getElementById('btn-auto').classList.remove('active');">
+        </div>
+
+        <div class="control-group">
+            <div class="control-header">
+                <span>🎨 CHROMA</span>
+                <span id="hueValue">160</span>
+            </div>
+            <input type="range" id="colorSlider" min="0" max="255" value="160" oninput="updateUI(this.value); sendColorFromSlider(this.value); document.getElementById('btn-auto').classList.remove('active');">
+            <div id="preview" class="preview-bar" style="background: #00d4ff;"></div>
+        </div>
+
+        <div class="action-grid">
+            <button onclick="send('RAINBOW')"><span class="rainbow-text">🌈 RAINBOW</span></button>
+            <button onclick="send('SEC')">⏱️ SECONDS</button>
+        </div>
+
+        <div class="speed-section">
+            <div class="control-header">
+                <span>🌀 DOT SPEED</span>
+                <span id="speedValue">10.0 s</span>
+            </div>
+            <input type="range" id="speedSlider" min="500" max="15000" step="500" value="10000" dir="rtl" oninput="updateSpeedLabel(this.value); send('T' + this.value)">
+        </div>
+
+        <hr>
+        <div class="footer-note">ILART PROTOCOL | NEO DARK</div>
+    </div>
+</div>
+
+<script>
+    let device = null;
+    let characteristic = null;
+    let deferredPrompt = null;
+
+    // PWA installation
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        const installBtn = document.createElement('button');
+        installBtn.textContent = '📱 INSTALL APP';
+        installBtn.className = 'install-btn';
+        installBtn.onclick = async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    installBtn.style.display = 'none';
+                }
+                deferredPrompt = null;
+            }
+        };
+        document.body.appendChild(installBtn);
+    });
+
+    // Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('SW registered:', reg))
+                .catch(err => console.log('SW error:', err));
+        });
+    }
+
+    function updateBrightnessLabel(val) {
+        document.getElementById('brightnessValue').innerText = val + '%';
+    }
+
+    function updateSpeedLabel(val) {
+        document.getElementById('speedValue').innerText = (val / 1000).toFixed(1) + ' s';
+    }
+
+    function updateUI(hueValue) {
+        const hueDeg = (hueValue * 360 / 255);
+        const color = `hsl(${hueDeg}, 100%, 58%)`;
+        const previewDiv = document.getElementById('preview');
+        if(previewDiv) {
+            previewDiv.style.background = color;
+            previewDiv.style.boxShadow = `0 0 24px ${color}`;
+        }
+        document.getElementById('hueValue').innerText = hueValue;
+    }
+
+    function sendColorFromSlider(val) {
+        if(characteristic) {
+            characteristic.writeValue(new TextEncoder().encode(String(val)));
+            document.getElementById('btn-auto').classList.remove('active');
+        }
+    }
+
+    async function send(data) {
+        if(!characteristic) {
+            const statusSpan = document.getElementById('status');
+            statusSpan.style.opacity = '0.5';
+            setTimeout(()=>{ if(statusSpan) statusSpan.style.opacity = '1'; }, 300);
+            return;
+        }
+        try {
+            await characteristic.writeValue(new TextEncoder().encode(data));
+            if(navigator.vibrate) navigator.vibrate(10);
+        } catch(e) { console.warn(e); }
+    }
+
+    function syncTime() {
+        if(!characteristic) {
+            alert("⚠️ Connect the clock via Bluetooth first");
+            return;
+        }
+        const now = new Date();
+        const timeString = now.getHours().toString().padStart(2,'0') + 
+                          now.getMinutes().toString().padStart(2,'0') + 
+                          now.getSeconds().toString().padStart(2,'0');
+        send(timeString);
+    }
+
+    async function connect() {
+        if(device && device.gatt.connected) {
+            alert("Already connected");
+            return;
+        }
+        try {
+            const requestedDevice = await navigator.bluetooth.requestDevice({
+                filters: [{ name: 'Ilart_clock' }],
+                optionalServices: ['0000ffe0-0000-1000-8000-00805f9b34fb']
+            });
+            device = requestedDevice;
+            const server = await device.gatt.connect();
+            const service = await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
+            characteristic = await service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
+            await characteristic.startNotifications();
+            
+            characteristic.addEventListener('characteristicvaluechanged', (event) => {
+                const value = new TextDecoder().decode(event.target.value);
+                const autoBtn = document.getElementById('btn-auto');
+                if(value === "AUTO_ON") autoBtn.classList.add('active');
+                else if(value === "AUTO_OFF") autoBtn.classList.remove('active');
+            });
+
+            const statusSpan = document.getElementById('status');
+            statusSpan.innerText = "CONNECTED";
+            statusSpan.style.color = "#00f7b0";
+            document.getElementById('main-connect').style.display = "none";
+
+            device.addEventListener('gattserverdisconnected', () => {
+                document.getElementById('status').innerText = "OFFLINE";
+                document.getElementById('status').style.color = "#ff5e6e";
+                document.getElementById('main-connect').style.display = "block";
+                characteristic = null;
+                device = null;
+                document.getElementById('btn-auto').classList.remove('active');
+            });
+        } catch(err) {
+            alert("Connection failed\nMake sure the clock is nearby");
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('brightnessSlider').value = 50;
+        updateBrightnessLabel(50);
+        document.getElementById('colorSlider').value = 160;
+        updateUI(160);
+        document.getElementById('speedSlider').value = 10000;
+        updateSpeedLabel(10000);
+        
+        document.getElementById('brightnessSlider').addEventListener('input', (e) => {
+            let val = e.target.value;
+            updateBrightnessLabel(val);
+            if(characteristic) send('B' + val);
+            document.getElementById('btn-auto').classList.remove('active');
+        });
+        document.getElementById('colorSlider').addEventListener('change', (e) => {
+            if(characteristic) send(String(e.target.value));
+            document.getElementById('btn-auto').classList.remove('active');
+        });
+        document.getElementById('speedSlider').addEventListener('change', (e) => {
+            if(characteristic) send('T' + e.target.value);
+        });
+    });
+
+    window.connect = connect;
+    window.send = send;
+    window.syncTime = syncTime;
+    window.updateUI = updateUI;
+    window.sendColorFromSlider = sendColorFromSlider;
+    window.updateBrightnessLabel = updateBrightnessLabel;
+    window.updateSpeedLabel = updateSpeedLabel;
+</script>
+</body>
+</html>
