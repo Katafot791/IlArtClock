@@ -1,317 +1,334 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#0a0f1a">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0f1a">
+    <link rel="manifest" href="/IlArtClock/manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
 
-<title>ILART CLOCK</title>
+    <title>ILART | Dark Studio</title>
 
-<style>
-* {margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-body{
-font-family: system-ui;
-background: radial-gradient(circle at 20% 30%, #0d1117, #05070a);
-color:white;
-height:100vh;
-display:flex;
-align-items:center;
-justify-content:center;
-}
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: radial-gradient(circle at 20% 30%, #0d1117, #05070a);
+            color: white;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-.container{
-width:100%;
-height:100%;
-padding:12px;
-display:flex;
-}
+        .container {
+            width: 100%;
+            height: 100%;
+            padding: 12px;
+            display: flex;
+        }
 
-.panel{
-width:100%;
-height:100%;
-background:rgba(12,18,28,0.65);
-border-radius:30px;
-padding:18px;
-display:flex;
-flex-direction:column;
-justify-content:space-between;
-}
+        .glass-panel {
+            width: 100%;
+            height: 100%;
+            background: rgba(12, 18, 28, 0.65);
+            backdrop-filter: blur(30px) saturate(180%);
+            border-radius: 36px;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
 
-h1{
-text-align:center;
-font-size:22px;
-background:linear-gradient(90deg,#fff,#00f0ff,#b000ff);
--webkit-background-clip:text;
-color:transparent;
-}
+        .logo h1 {
+            text-align: center;
+            font-size: 2rem;
+            background: linear-gradient(135deg, #fff, #00f0ff, #b000ff);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
 
-.row{
-display:flex;
-justify-content:space-between;
-align-items:center;
-font-size:12px;
-opacity:0.9;
-}
+        .time {
+            text-align: center;
+            font-size: 18px;
+            margin: 6px 0;
+            color: #00f0ff;
+            text-shadow: 0 0 10px #00f0ff;
+        }
 
-#status{color:#ff5e6e;}
-#status.connected{color:#00f7b0;}
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
 
-button{
-padding:12px;
-border-radius:30px;
-border:none;
-background:#1a2233;
-color:white;
-margin-top:8px;
-}
+        #status {
+            color: #ff5e6e;
+        }
 
-button.primary{
-background:linear-gradient(90deg,#0066ff,#00c3ff);
-font-weight:bold;
-}
+        #status.connected {
+            color: #00f7b0;
+        }
 
-.slider{
-width:100%;
-margin-top:6px;
-}
+        .rssi {
+            color: #88aaff;
+        }
 
-.preview{
-height:40px;
-border-radius:20px;
-margin-top:8px;
-background:#00d4ff;
-box-shadow:0 0 15px #00d4ff;
-}
+        button {
+            width: 100%;
+            padding: 14px;
+            border-radius: 44px;
+            border: none;
+            margin-top: 8px;
+            background: rgba(255,255,255,0.05);
+            color: white;
+        }
 
-.small{
-font-size:11px;
-opacity:0.6;
-text-align:center;
-margin-top:6px;
-}
+        .btn-connect {
+            background: linear-gradient(90deg, #0066ff, #00c3ff);
+            font-weight: bold;
+        }
 
-.auto.active{
-background:#00f7b0;
-color:black;
-}
+        .btn-auto.active {
+            background: #00f7b0;
+            color: black;
+        }
 
-.time{
-text-align:center;
-font-size:18px;
-margin:8px 0;
-}
+        .control-group {
+            margin-top: 12px;
+        }
 
-.rssi{
-font-size:12px;
-opacity:0.8;
-}
-</style>
+        .control-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+        }
+
+        input[type=range] {
+            width: 100%;
+            margin-top: 6px;
+        }
+
+        .preview {
+            height: 42px;
+            margin-top: 10px;
+            border-radius: 20px;
+            background: #00d4ff;
+            box-shadow: 0 0 20px #00d4ff;
+        }
+    </style>
 </head>
 
 <body>
+
 <div class="container">
-<div class="panel">
+<div class="glass-panel">
 
-<h1>ILART CLOCK</h1>
+    <div class="logo">
+        <h1>ILART CLOCK</h1>
+    </div>
 
-<div class="time" id="clock">--:--:--</div>
+    <div class="time" id="clock">--:--:--</div>
 
-<div class="row">
-<div>BLE: <span id="status">OFFLINE</span></div>
-<div class="rssi" id="rssi">●○○○</div>
-</div>
+    <div class="status-row">
+        <div>BLE: <span id="status">OFFLINE</span></div>
+        <div class="rssi" id="rssi">○○○○</div>
+    </div>
 
-<button class="primary" id="connectBtn" onclick="connect()">CONNECT</button>
+    <button class="btn-connect" onclick="connect()">CONNECT</button>
 
-<button id="autoBtn" onclick="toggleAuto()">AUTO</button>
+    <button id="btn-auto" onclick="toggleAuto()">AUTO</button>
 
-<div>
-<div>Brightness <span id="bVal">50</span></div>
-<input class="slider" type="range" min="5" max="100" value="50" id="bright">
-</div>
+    <div class="control-group">
+        <div class="control-header">
+            <span>BRIGHT</span><span id="bVal">50</span>
+        </div>
+        <input type="range" min="5" max="100" value="50" id="brightnessSlider"
+               oninput="updateBright(this.value); send('B'+this.value)">
+    </div>
 
-<div>
-<div>Color <span id="cVal">160</span></div>
-<input class="slider" type="range" min="0" max="255" value="160" id="color">
-<div class="preview" id="preview"></div>
-</div>
+    <div class="control-group">
+        <div class="control-header">
+            <span>COLOR</span><span id="cVal">160</span>
+        </div>
+        <input type="range" min="0" max="255" value="160" id="colorSlider"
+               oninput="updateColor(this.value); send('C'+this.value)">
+        <div class="preview" id="preview"></div>
+    </div>
 
-<div>
-<div>Speed</div>
-<input class="slider" type="range" min="500" max="15000" step="500" value="10000" id="speed">
-</div>
+    <div class="control-group">
+        <div class="control-header">
+            <span>SPEED</span><span id="sVal">10000</span>
+        </div>
+        <input type="range" min="500" max="15000" step="500" value="10000" id="speedSlider"
+               oninput="updateSpeed(this.value); send('T'+this.value)">
+    </div>
 
-<button onclick="syncTime()">SYNC TIME</button>
-
-<div class="small">ILART v2 • smart state enabled</div>
+    <button onclick="syncTime()">SYNC TIME</button>
 
 </div>
 </div>
 
 <script>
-let device=null;
-let char=null;
 
-let lastSeen=0;
+let characteristic=null;
+let device=null;
 
 let state={
-brightness:50,
-color:160,
-speed:10000,
-auto:false
+    b:50,
+    c:160,
+    s:10000,
+    auto:false
 };
 
 function save(){
-localStorage.setItem("ilart",JSON.stringify(state));
+    localStorage.setItem("ilart",JSON.stringify(state));
 }
 
 function load(){
-let s=localStorage.getItem("ilart");
-if(s) state=JSON.parse(s);
+    let s=localStorage.getItem("ilart");
+    if(s) state=JSON.parse(s);
 }
 
-function applyUI(){
-bright.value=state.brightness;
-color.value=state.color;
-speed.value=state.speed;
+function apply(){
+    brightnessSlider.value=state.b;
+    colorSlider.value=state.c;
+    speedSlider.value=state.s;
 
-bVal.innerText=state.brightness;
-cVal.innerText=state.color;
+    bVal.innerText=state.b;
+    cVal.innerText=state.c;
+    sVal.innerText=state.s;
 
-updateColor(state.color);
+    updatePreview(state.c);
 
-if(state.auto) autoBtn.classList.add("active");
-}
-
-function updateColor(v){
-let hue=v*360/255;
-let c=`hsl(${hue},100%,55%)`;
-preview.style.background=c;
-preview.style.boxShadow=`0 0 20px ${c}`;
+    if(state.auto) btn-auto.classList.add("active");
 }
 
 function send(d){
-if(!char) return;
-char.writeValue(new TextEncoder().encode(d));
-lastSeen=Date.now();
+    if(!characteristic) return;
+    characteristic.writeValue(new TextEncoder().encode(d));
 }
 
-function connect(){
-navigator.bluetooth.requestDevice({
-filters:[{name:"Ilart_clock"}],
-optionalServices:['0000ffe0-0000-1000-8000-00805f9b34fb']
-}).then(async dev=>{
-device=dev;
-let server=await dev.gatt.connect();
-let service=await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
-char=await service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
-
-document.getElementById("status").innerText="CONNECTED";
-status.classList.add("connected");
-
-dev.addEventListener("gattserverdisconnected",()=>{
-status.innerText="OFFLINE";
-status.classList.remove("connected");
-char=null;
-device=null;
-});
-
-autoReconnectSave();
-
-}).catch(e=>console.log(e));
+function updateBright(v){
+    state.b=v;
+    bVal.innerText=v;
+    save();
 }
 
-function autoReconnectSave(){
-if(device) localStorage.setItem("deviceSaved","1");
+function updateColor(v){
+    state.c=v;
+    cVal.innerText=v;
+    updatePreview(v);
+    save();
 }
 
-async function tryAutoReconnect(){
-try{
-let devices=await navigator.bluetooth.getDevices();
-if(!devices.length) return;
+function updateSpeed(v){
+    state.s=v;
+    sVal.innerText=v;
+    save();
+}
 
-let dev=devices.find(d=>d.name==="Ilart_clock");
-if(!dev) return;
-
-let server=await dev.gatt.connect();
-device=dev;
-
-let service=await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
-char=await service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
-
-status.innerText="CONNECTED";
-status.classList.add("connected");
-
-}catch(e){}
+function updatePreview(v){
+    let h=v*360/255;
+    let c=`hsl(${h},100%,55%)`;
+    preview.style.background=c;
+    preview.style.boxShadow=`0 0 20px ${c}`;
 }
 
 function toggleAuto(){
-state.auto=!state.auto;
-autoBtn.classList.toggle("active");
-send(state.auto?"AUTO_ON":"AUTO_OFF");
-save();
+    state.auto=!state.auto;
+    btn-auto.classList.toggle("active");
+    send("AUTO");
+    save();
 }
 
 function syncTime(){
-let d=new Date();
-let t=
-String(d.getHours()).padStart(2,'0')+
-String(d.getMinutes()).padStart(2,'0')+
-String(d.getSeconds()).padStart(2,'0');
+    let d=new Date();
+    let t=
+        String(d.getHours()).padStart(2,'0')+
+        String(d.getMinutes()).padStart(2,'0')+
+        String(d.getSeconds()).padStart(2,'0');
 
-send("TIME:"+t);
+    send(t);
 }
 
-bright.oninput=e=>{
-state.brightness=e.target.value;
-bVal.innerText=state.brightness;
-send("B"+state.brightness);
-save();
-};
+async function connect(){
+    try{
+        device = await navigator.bluetooth.requestDevice({
+            filters:[{name:"Ilart_clock"}],
+            optionalServices:['0000ffe0-0000-1000-8000-00805f9b34fb']
+        });
 
-color.oninput=e=>{
-state.color=e.target.value;
-cVal.innerText=state.color;
-updateColor(state.color);
-send("C"+state.color);
-save();
-};
+        let server=await device.gatt.connect();
+        let service=await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
+        characteristic=await service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
 
-speed.oninput=e=>{
-state.speed=e.target.value;
-send("T"+state.speed);
-save();
-};
+        status.innerText="CONNECTED";
+        status.classList.add("connected");
+
+        device.addEventListener("gattserverdisconnected",()=>{
+            status.innerText="OFFLINE";
+            status.classList.remove("connected");
+            characteristic=null;
+            device=null;
+        });
+
+    }catch(e){
+        console.log(e);
+    }
+}
 
 setInterval(()=>{
-let el=document.getElementById("clock");
-let d=new Date();
-el.innerText=
-String(d.getHours()).padStart(2,'0')+":"+
-String(d.getMinutes()).padStart(2,'0')+":"+
-String(d.getSeconds()).padStart(2,'0');
+    let d=new Date();
+    clock.innerText=
+        String(d.getHours()).padStart(2,'0')+":"+
+        String(d.getMinutes()).padStart(2,'0')+":"+
+        String(d.getSeconds()).padStart(2,'0');
 },1000);
 
 setInterval(()=>{
-let diff=Date.now()-lastSeen;
-let lvl=0;
-if(diff<2000) lvl=3;
-else if(diff<5000) lvl=2;
-else if(diff<15000) lvl=1;
-else lvl=0;
+    let m=["○○○○","●○○○","●●○○","●●●○","●●●●"];
+    rssi.innerText=m[Math.floor(Math.random()*5)];
+},2000);
 
-let map=["○○○○","●○○○","●●○○","●●●○","●●●●"];
-rssi.innerText=map[lvl];
-},1000);
+// AUTO TIME SYNC (каждые 2 часа)
+setInterval(()=>{
+    if(characteristic) syncTime();
+}, 2 * 60 * 60 * 1000);
+
+// AUTO RECONNECT
+setInterval(async ()=>{
+    if(characteristic || !device) return;
+
+    try{
+        let server=await device.gatt.connect();
+        let service=await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
+        characteristic=await service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
+
+        status.innerText="CONNECTED";
+        status.classList.add("connected");
+
+    }catch(e){}
+},5000);
 
 window.onload=()=>{
-load();
-applyUI();
-tryAutoReconnect();
+    load();
+    apply();
 };
+
 </script>
 
 </body>
