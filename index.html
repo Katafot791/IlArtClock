@@ -1,332 +1,229 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0a0f1a">
-    <link rel="manifest" href="/IlArtClock/manifest.json">
-    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-    <link rel="apple-touch-icon" href="icon-192.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a0f1a">
+<title>ILART CLOCK</title>
 
-    <title>ILART | Dark Studio</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+body{
+font-family:system-ui;
+background:radial-gradient(circle at 20% 30%,#0d1117,#05070a);
+color:white;
+height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+}
 
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background: radial-gradient(circle at 20% 30%, #0d1117, #05070a);
-            color: white;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+.container{width:100%;height:100%;padding:12px;display:flex}
 
-        .container {
-            width: 100%;
-            height: 100%;
-            padding: 12px;
-            display: flex;
-        }
+.panel{
+width:100%;height:100%;
+background:rgba(12,18,28,0.65);
+backdrop-filter:blur(30px);
+border-radius:34px;
+padding:18px;
+display:flex;
+flex-direction:column;
+justify-content:space-between;
+border:1px solid rgba(255,255,255,0.08);
+}
 
-        .glass-panel {
-            width: 100%;
-            height: 100%;
-            background: rgba(12, 18, 28, 0.65);
-            backdrop-filter: blur(30px) saturate(180%);
-            border-radius: 36px;
-            border: 1px solid rgba(255,255,255,0.08);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-            padding: 22px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
+h1{
+text-align:center;
+font-size:22px;
+background:linear-gradient(90deg,#fff,#00f0ff,#b000ff);
+-webkit-background-clip:text;
+color:transparent;
+}
 
-        .logo h1 {
-            text-align: center;
-            font-size: 2rem;
-            background: linear-gradient(135deg, #fff, #00f0ff, #b000ff);
-            -webkit-background-clip: text;
-            color: transparent;
-        }
+.time{
+text-align:center;
+font-size:18px;
+color:#00f0ff;
+text-shadow:0 0 10px #00f0ff;
+}
 
-        .time {
-            text-align: center;
-            font-size: 18px;
-            margin: 6px 0;
-            color: #00f0ff;
-            text-shadow: 0 0 10px #00f0ff;
-        }
+.row{
+display:flex;
+justify-content:space-between;
+font-size:12px;
+}
 
-        .status-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            margin-bottom: 10px;
-        }
+#status{color:#ff5e6e}
+#status.ok{color:#00f7b0}
 
-        #status {
-            color: #ff5e6e;
-        }
+button{
+width:100%;
+padding:14px;
+border-radius:40px;
+border:none;
+margin-top:8px;
+background:rgba(255,255,255,0.05);
+color:white;
+}
 
-        #status.connected {
-            color: #00f7b0;
-        }
+.primary{
+background:linear-gradient(90deg,#0066ff,#00c3ff);
+font-weight:bold;
+}
 
-        .rssi {
-            color: #88aaff;
-        }
+.active{
+background:#00f7b0!important;
+color:black!important;
+}
 
-        button {
-            width: 100%;
-            padding: 14px;
-            border-radius: 44px;
-            border: none;
-            margin-top: 8px;
-            background: rgba(255,255,255,0.05);
-            color: white;
-        }
+input{width:100%;margin-top:6px}
 
-        .btn-connect {
-            background: linear-gradient(90deg, #0066ff, #00c3ff);
-            font-weight: bold;
-        }
-
-        .btn-auto.active {
-            background: #00f7b0;
-            color: black;
-        }
-
-        .control-group {
-            margin-top: 12px;
-        }
-
-        .control-header {
-            display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-        }
-
-        input[type=range] {
-            width: 100%;
-            margin-top: 6px;
-        }
-
-        .preview {
-            height: 42px;
-            margin-top: 10px;
-            border-radius: 20px;
-            background: #00d4ff;
-            box-shadow: 0 0 20px #00d4ff;
-        }
-    </style>
+.preview{
+height:40px;
+border-radius:20px;
+margin-top:10px;
+box-shadow:0 0 20px #00d4ff;
+}
+</style>
 </head>
 
 <body>
 
 <div class="container">
-<div class="glass-panel">
+<div class="panel">
 
-    <div class="logo">
-        <h1>ILART CLOCK</h1>
-    </div>
+<h1>ILART CLOCK</h1>
 
-    <div class="time" id="clock">--:--:--</div>
+<div class="time" id="clock">--:--:--</div>
 
-    <div class="status-row">
-        <div>BLE: <span id="status">OFFLINE</span></div>
-        <div class="rssi" id="rssi">○○○○</div>
-    </div>
+<div class="row">
+<div>BLE: <span id="status">OFFLINE</span></div>
+<div id="rssi">○○○○</div>
+</div>
 
-    <button class="btn-connect" onclick="connect()">CONNECT</button>
+<button class="primary" onclick="connect()">CONNECT</button>
 
-    <button id="btn-auto" onclick="toggleAuto()">AUTO</button>
+<button id="autoBtn" onclick="send('AUTO')">AUTO BRIGHT</button>
 
-    <div class="control-group">
-        <div class="control-header">
-            <span>BRIGHT</span><span id="bVal">50</span>
-        </div>
-        <input type="range" min="5" max="100" value="50" id="brightnessSlider"
-               oninput="updateBright(this.value); send('B'+this.value)">
-    </div>
+<div>
+<div>BRIGHT <span id="bVal">50</span></div>
+<input type="range" min="5" max="100" value="50"
+oninput="bVal.innerText=this.value; send('B'+this.value); save()">
+</div>
 
-    <div class="control-group">
-        <div class="control-header">
-            <span>COLOR</span><span id="cVal">160</span>
-        </div>
-        <input type="range" min="0" max="255" value="160" id="colorSlider"
-               oninput="updateColor(this.value); send('C'+this.value)">
-        <div class="preview" id="preview"></div>
-    </div>
+<div>
+<div>CHROMA <span id="cVal">160</span></div>
+<input type="range" min="0" max="255" value="160"
+oninput="cVal.innerText=this.value; send(this.value); updateHue(this.value); save()">
+<div class="preview" id="preview"></div>
+</div>
 
-    <div class="control-group">
-        <div class="control-header">
-            <span>SPEED</span><span id="sVal">10000</span>
-        </div>
-        <input type="range" min="500" max="15000" step="500" value="10000" id="speedSlider"
-               oninput="updateSpeed(this.value); send('T'+this.value)">
-    </div>
+<div>
+<div>DOT SPEED</div>
+<input type="range" min="500" max="15000" step="500" value="10000"
+oninput="send('T'+this.value); save()">
+</div>
 
-    <button onclick="syncTime()">SYNC TIME</button>
+<button onclick="send('RAINBOW')">RAINBOW</button>
+<button onclick="send('SEC')">SECONDS</button>
+<button onclick="syncTime()">SYNC TIME</button>
 
 </div>
 </div>
 
 <script>
 
-let characteristic=null;
-let device=null;
+let ch=null;
+let dev=null;
 
 let state={
-    b:50,
-    c:160,
-    s:10000,
-    auto:false
+auto:false
 };
 
 function save(){
-    localStorage.setItem("ilart",JSON.stringify(state));
+localStorage.setItem("ilart",JSON.stringify(state));
 }
 
 function load(){
-    let s=localStorage.getItem("ilart");
-    if(s) state=JSON.parse(s);
-}
-
-function apply(){
-    brightnessSlider.value=state.b;
-    colorSlider.value=state.c;
-    speedSlider.value=state.s;
-
-    bVal.innerText=state.b;
-    cVal.innerText=state.c;
-    sVal.innerText=state.s;
-
-    updatePreview(state.c);
-
-    if(state.auto) btn-auto.classList.add("active");
+let s=localStorage.getItem("ilart");
+if(s) state=JSON.parse(s);
 }
 
 function send(d){
-    if(!characteristic) return;
-    characteristic.writeValue(new TextEncoder().encode(d));
+if(!ch) return;
+ch.writeValue(new TextEncoder().encode(d));
 }
 
-function updateBright(v){
-    state.b=v;
-    bVal.innerText=v;
-    save();
-}
-
-function updateColor(v){
-    state.c=v;
-    cVal.innerText=v;
-    updatePreview(v);
-    save();
-}
-
-function updateSpeed(v){
-    state.s=v;
-    sVal.innerText=v;
-    save();
-}
-
-function updatePreview(v){
-    let h=v*360/255;
-    let c=`hsl(${h},100%,55%)`;
-    preview.style.background=c;
-    preview.style.boxShadow=`0 0 20px ${c}`;
-}
-
-function toggleAuto(){
-    state.auto=!state.auto;
-    btn-auto.classList.toggle("active");
-    send("AUTO");
-    save();
+function updateHue(v){
+let h=v*360/255;
+let c=`hsl(${h},100%,55%)`;
+preview.style.background=c;
+preview.style.boxShadow=`0 0 20px ${c}`;
 }
 
 function syncTime(){
-    let d=new Date();
-    let t=
-        String(d.getHours()).padStart(2,'0')+
-        String(d.getMinutes()).padStart(2,'0')+
-        String(d.getSeconds()).padStart(2,'0');
+let d=new Date();
+let t=
+String(d.getHours()).padStart(2,'0')+
+String(d.getMinutes()).padStart(2,'0');
 
-    send(t);
+send(t);
 }
 
-async function connect(){
-    try{
-        device = await navigator.bluetooth.requestDevice({
-            filters:[{name:"Ilart_clock"}],
-            optionalServices:['0000ffe0-0000-1000-8000-00805f9b34fb']
-        });
+function connect(){
+navigator.bluetooth.requestDevice({
+filters:[{name:"Ilart_clock"}],
+optionalServices:['0000ffe0-0000-1000-8000-00805f9b34fb']
+}).then(async d=>{
+dev=d;
+let s=await d.gatt.connect();
+let srv=await s.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
+ch=await srv.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
 
-        let server=await device.gatt.connect();
-        let service=await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
-        characteristic=await service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
+status.innerText="CONNECTED";
+status.classList.add("ok");
 
-        status.innerText="CONNECTED";
-        status.classList.add("connected");
+ch.addEventListener("characteristicvaluechanged",e=>{
+let v=new TextDecoder().decode(e.target.value);
 
-        device.addEventListener("gattserverdisconnected",()=>{
-            status.innerText="OFFLINE";
-            status.classList.remove("connected");
-            characteristic=null;
-            device=null;
-        });
+if(v=="AUTO_ON"){
+autoBtn.classList.add("active");
+}
+if(v=="AUTO_OFF"){
+autoBtn.classList.remove("active");
+}
+});
 
-    }catch(e){
-        console.log(e);
-    }
+d.addEventListener("gattserverdisconnected",()=>{
+status.innerText="OFFLINE";
+status.classList.remove("ok");
+ch=null;
+dev=null;
+});
+});
 }
 
 setInterval(()=>{
-    let d=new Date();
-    clock.innerText=
-        String(d.getHours()).padStart(2,'0')+":"+
-        String(d.getMinutes()).padStart(2,'0')+":"+
-        String(d.getSeconds()).padStart(2,'0');
+let d=new Date();
+clock.innerText=
+String(d.getHours()).padStart(2,'0')+":"+
+String(d.getMinutes()).padStart(2,'0')+":"+
+String(d.getSeconds()).padStart(2,'0');
 },1000);
 
 setInterval(()=>{
-    let m=["○○○○","●○○○","●●○○","●●●○","●●●●"];
-    rssi.innerText=m[Math.floor(Math.random()*5)];
+let m=["○○○○","●○○○","●●○○","●●●○","●●●●"];
+rssi.innerText=m[Math.floor(Math.random()*5)];
 },2000);
 
-// AUTO TIME SYNC (каждые 2 часа)
+// auto sync каждые 2 часа
 setInterval(()=>{
-    if(characteristic) syncTime();
-}, 2 * 60 * 60 * 1000);
-
-// AUTO RECONNECT
-setInterval(async ()=>{
-    if(characteristic || !device) return;
-
-    try{
-        let server=await device.gatt.connect();
-        let service=await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
-        characteristic=await service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
-
-        status.innerText="CONNECTED";
-        status.classList.add("connected");
-
-    }catch(e){}
-},5000);
+if(ch) syncTime();
+},7200000);
 
 window.onload=()=>{
-    load();
-    apply();
+load();
 };
 
 </script>
