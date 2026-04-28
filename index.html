@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0a0f1a">
 <title>ILART CLOCK</title>
 
@@ -22,9 +22,10 @@ justify-content:center;
 .container{width:100%;height:100%;padding:12px;display:flex}
 
 .panel{
-width:100%;height:100%;
+width:100%;
+height:100%;
 background:rgba(12,18,28,0.65);
-backdrop-filter:blur(30px);
+backdrop-filter:blur(28px);
 border-radius:34px;
 padding:18px;
 display:flex;
@@ -85,6 +86,8 @@ border-radius:20px;
 margin-top:10px;
 box-shadow:0 0 20px #00d4ff;
 }
+
+.hidden{display:none}
 </style>
 </head>
 
@@ -102,32 +105,31 @@ box-shadow:0 0 20px #00d4ff;
 <div id="rssi">○○○○</div>
 </div>
 
-<button class="primary" onclick="connect()">CONNECT</button>
+<button id="connectBtn" class="primary" onclick="connect()">CONNECT</button>
 
 <button id="autoBtn" onclick="send('AUTO')">AUTO BRIGHT</button>
 
 <div>
 <div>BRIGHT <span id="bVal">50</span></div>
 <input type="range" min="5" max="100" value="50"
-oninput="bVal.innerText=this.value; send('B'+this.value); save()">
+oninput="bVal.innerText=this.value; send('B'+this.value)">
 </div>
 
 <div>
 <div>CHROMA <span id="cVal">160</span></div>
 <input type="range" min="0" max="255" value="160"
-oninput="cVal.innerText=this.value; send(this.value); updateHue(this.value); save()">
+oninput="cVal.innerText=this.value; send(this.value); updateHue(this.value)">
 <div class="preview" id="preview"></div>
 </div>
 
 <div>
-<div>DOT SPEED</div>
+<div>SPEED</div>
 <input type="range" min="500" max="15000" step="500" value="10000"
-oninput="send('T'+this.value); save()">
+oninput="send('T'+this.value)">
 </div>
 
 <button onclick="send('RAINBOW')">RAINBOW</button>
 <button onclick="send('SEC')">SECONDS</button>
-<button onclick="syncTime()">SYNC TIME</button>
 
 </div>
 </div>
@@ -136,19 +138,6 @@ oninput="send('T'+this.value); save()">
 
 let ch=null;
 let dev=null;
-
-let state={
-auto:false
-};
-
-function save(){
-localStorage.setItem("ilart",JSON.stringify(state));
-}
-
-function load(){
-let s=localStorage.getItem("ilart");
-if(s) state=JSON.parse(s);
-}
 
 function send(d){
 if(!ch) return;
@@ -166,44 +155,64 @@ function syncTime(){
 let d=new Date();
 let t=
 String(d.getHours()).padStart(2,'0')+
-String(d.getMinutes()).padStart(2,'0');
+String(d.getMinutes()).padStart(2,'0')+
+String(d.getSeconds()).padStart(2,'0');
 
 send(t);
 }
 
-function connect(){
-navigator.bluetooth.requestDevice({
-filters:[{name:"Ilart_clock"}],
-optionalServices:['0000ffe0-0000-1000-8000-00805f9b34fb']
-}).then(async d=>{
-dev=d;
-let s=await d.gatt.connect();
-let srv=await s.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
-ch=await srv.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
-
+function applyConnectUI(){
+connectBtn.classList.add("hidden");
 status.innerText="CONNECTED";
 status.classList.add("ok");
-
-ch.addEventListener("characteristicvaluechanged",e=>{
-let v=new TextDecoder().decode(e.target.value);
-
-if(v=="AUTO_ON"){
-autoBtn.classList.add("active");
+syncTime(); // ✔ автосинхронизация при подключении
 }
-if(v=="AUTO_OFF"){
-autoBtn.classList.remove("active");
-}
-});
 
-d.addEventListener("gattserverdisconnected",()=>{
+function resetUI(){
+connectBtn.classList.remove("hidden");
 status.innerText="OFFLINE";
 status.classList.remove("ok");
 ch=null;
 dev=null;
-});
-});
 }
 
+function connect(){
+
+navigator.bluetooth.requestDevice({
+filters:[{name:"Ilart_clock"}],
+optionalServices:['0000ffe0-0000-1000-8000-00805f9b34fb']
+})
+.then(async d=>{
+dev=d;
+
+let s=await d.gatt.connect();
+let srv=await s.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
+ch=await srv.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
+
+applyConnectUI();
+
+d.addEventListener("gattserverdisconnected",()=>{
+resetUI();
+});
+
+})
+.catch(e=>console.log(e));
+}
+
+// AUTO status from ESP
+function handleNotify(v){
+let msg=new TextDecoder().decode(v);
+
+if(msg==="AUTO_ON"){
+autoBtn.classList.add("active");
+}
+
+if(msg==="AUTO_OFF"){
+autoBtn.classList.remove("active");
+}
+}
+
+// CLOCK
 setInterval(()=>{
 let d=new Date();
 clock.innerText=
@@ -212,20 +221,7 @@ String(d.getMinutes()).padStart(2,'0')+":"+
 String(d.getSeconds()).padStart(2,'0');
 },1000);
 
-setInterval(()=>{
-let m=["○○○○","●○○○","●●○○","●●●○","●●●●"];
-rssi.innerText=m[Math.floor(Math.random()*5)];
-},2000);
-
-// auto sync каждые 2 часа
-setInterval(()=>{
-if(ch) syncTime();
-},7200000);
-
-window.onload=()=>{
-load();
-};
-
+// fake RSSI removed (честный статус)
 </script>
 
 </body>
