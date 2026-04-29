@@ -275,6 +275,7 @@ function restoreState(){
 }
 
 async function startConnection(){
+    if(device.gatt.connected) return;
     const server = await device.gatt.connect();
     const service = await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
     characteristic = await service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
@@ -293,15 +294,26 @@ async function startConnection(){
 }
 
 async function autoReconnect(){
-    if(!device) return;
-
     while(true){
         try{
-            await startConnection();
-            break;
-        }catch{
-            await new Promise(r=>setTimeout(r,2000));
-        }
+            if(device && device.gatt){
+                await startConnection();
+                return;
+            }
+        }catch{}
+
+        // если старый device мёртв — ищем заново
+        try{
+            const devices = await navigator.bluetooth.getDevices();
+            const known = devices.find(d=>d.name==='Ilart_clock');
+            if(known){
+                device = known;
+                await startConnection();
+                return;
+            }
+        }catch{}
+
+        await new Promise(r=>setTimeout(r,2000));
     }
 }
 
