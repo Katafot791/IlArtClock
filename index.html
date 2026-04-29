@@ -201,10 +201,18 @@ function loadState(){
 }
 
 function updateClockInfo(){
-    if(!lastSyncTime) return;
-    const now = new Date();
-    const t = now.toTimeString().split(' ')[0];
-    const mins = Math.floor((Date.now() - lastSyncTime)/60000);
+    if(!lastSyncTime){
+        document.getElementById('clockInfo').innerText =
+            'CLOCK --:--:-- | not synced yet';
+        return;
+    }
+
+    const elapsed = Date.now() - lastSyncTime;
+    const clockNow = new Date(Date.now() - elapsed);
+
+    const t = clockNow.toTimeString().split(' ')[0];
+    const mins = Math.floor(elapsed/60000);
+
     document.getElementById('clockInfo').innerText =
         `CLOCK ${t} | synced ${mins} min ago`;
 }
