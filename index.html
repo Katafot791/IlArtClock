@@ -297,11 +297,20 @@ async function startConnection(){
     restoreState();
     syncTime();
 
-    device.('gattserverdisconnected', ()=>{
-    characteristic = null;   // ВАЖНО
+    device.addEventListener('gattserverdisconnected', async () => {
+    console.log('BLE disconnected');
+
+    // 💥 Сброс ВСЕГО старого состояния
+    characteristic = null;
+    device = null;
+
     document.getElementById('status').innerText = "RECONNECTING...";
+
+    // Небольшая пауза, чтобы стек BLE в браузере «остыл»
+    await new Promise(r => setTimeout(r, 1000));
+
     autoReconnect();
-}, { once:true }); // ВАЖНО
+}, { once: true }); // ВАЖНО
 }
 
 async function autoReconnect(){
