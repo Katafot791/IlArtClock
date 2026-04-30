@@ -169,7 +169,7 @@ let device=null, characteristic=null;
 const STATE_KEY='ilart_state';
 let deferredPrompt = null;
 
-window.('beforeinstallprompt', (e) => {
+window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
 
@@ -274,7 +274,7 @@ function restoreState(){
             optionalServices:['0000ffe0-0000-1000-8000-00805f9b34fb']
         });
 
-        await ();
+        await startConnection(dev);
 
     }catch(e){
         alert("Connection failed. Make sure the clock is nearby.");
@@ -288,7 +288,7 @@ async function connectNewDevice(){
             optionalServices: ['battery_service']
         });
 
-        await (dev);
+        await startConnection(dev);
 
     }catch(e){
         console.log(e);
@@ -327,18 +327,7 @@ async function startConnection(dev){
         throw e;
     }
 }
-    const server = await device.gatt.connect();
-    const service = await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
-    characteristic = await service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
-
-    document.getElementById('status').innerText = "CONNECTED";
-    document.getElementById('status').style.color = "#00f7b0";
-    document.getElementById('main-connect').style.display = "none";
-
-    restoreState();
-    syncTime();
-
-    device.addEventListener('gattserverdisconnected', async () => {
+    
     console.log('BLE disconnected');
 
     // 💥 Сброс ВСЕГО старого состояния
@@ -371,7 +360,7 @@ async function autoReconnect(){
 }
 
 // автоподключение без кнопки
-window.('load', async ()=>{
+window.addEventListener('load', async ()=>{
     try{
         const devices = await navigator.bluetooth.getDevices();
         const known = devices.find(d=>d.name==='Ilart_clock');
@@ -396,7 +385,7 @@ function updateUI(hueValue){
     document.getElementById('hueValue').innerText = hueValue;
 }
 
-document.('DOMContentLoaded', ()=>{
+document.addEventListener('DOMContentLoaded', ()=>{
     const b = document.getElementById('brightnessSlider');
     const c = document.getElementById('colorSlider');
     const s = document.getElementById('speedSlider');
@@ -405,7 +394,7 @@ document.('DOMContentLoaded', ()=>{
     updateUI(c.value);
     updateSpeedLabel(s.value);
 
-    b.('input', e=>{
+    b.addEventListener('input', e=>{
         const v = e.target.value;
         updateBrightnessLabel(v);
         send('B'+v);
