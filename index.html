@@ -121,7 +121,7 @@
 
 <div id="clockInfo">CLOCK --:--:-- | last sync: --</div>
 
-<button id="main-connect" class="btn-connect" onclick="()">🔗 CONNECT DEVICE</button>
+<button id="main-connect" class="btn-connect" onclick="connectNewDevice()">🔗 CONNECT DEVICE</button>
 
 <div class="double-buttons">
     <button class="btn-sync" onclick="syncTime()">🔄 SYNC TIME</button>
@@ -274,7 +274,7 @@ function restoreState(){
             optionalServices:['0000ffe0-0000-1000-8000-00805f9b34fb']
         });
 
-        await startConnection();
+        await ();
 
     }catch(e){
         alert("Connection failed. Make sure the clock is nearby.");
@@ -288,7 +288,7 @@ async function connectNewDevice(){
             optionalServices: ['battery_service']
         });
 
-        await startConnection(dev);
+        await (dev);
 
     }catch(e){
         console.log(e);
