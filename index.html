@@ -207,11 +207,10 @@ function updateClockInfo(){
         return;
     }
 
-    const elapsed = Date.now() - lastSyncTime;
-    const clockNow = new Date(Date.now() - elapsed);
+    const clockNow = new Date(lastSyncTime + (Date.now() - lastSyncTime));
 
     const t = clockNow.toTimeString().split(' ')[0];
-    const mins = Math.floor(elapsed/60000);
+    const mins = Math.floor((Date.now()-lastSyncTime)/60000);
 
     document.getElementById('clockInfo').innerText =
         `CLOCK ${t} | synced ${mins} min ago`;
@@ -225,7 +224,7 @@ setInterval(()=>{
 
 
 async function send(data){
-    if(!characteristic) return;
+    if(!characteristic || !device.gatt.connected) return;
 
     const t0 = performance.now();
     await characteristic.writeValue(new TextEncoder().encode(data));
@@ -242,7 +241,7 @@ async function send(data){
 }
 
 function syncTime(){
-    if(!characteristic) return;
+    if(!characteristic || !device.gatt.connected) return;
     const now = new Date();
     const str =
         now.getHours().toString().padStart(2,'0')+
@@ -284,6 +283,9 @@ function restoreState(){
 
 async function startConnection(){
     //if(device.gatt.connected) return;
+    if (device.gatt.connected) {
+    await device.gatt.disconnect();
+}
     const server = await device.gatt.connect();
     const service = await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
     characteristic = await service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
@@ -296,21 +298,21 @@ async function startConnection(){
     syncTime();
 
     device.addEventListener('gattserverdisconnected', ()=>{
-        document.getElementById('status').innerText = "RECONNECTING...";
-        autoReconnect();
-    });
+    characteristic = null;   // ВАЖНО
+    document.getElementById('status').innerText = "RECONNECTING...";
+    autoReconnect();
+}, { once:true }); // ВАЖНО
 }
 
 async function autoReconnect(){
     while(true){
         try{
-            if(device && device.gatt){
+            if(device){
                 await startConnection();
                 return;
             }
-        }catch{}
+        }catch(e){}
 
-        // если старый device мёртв — ищем заново
         try{
             const devices = await navigator.bluetooth.getDevices();
             const known = devices.find(d=>d.name==='Ilart_clock');
@@ -319,7 +321,7 @@ async function autoReconnect(){
                 await startConnection();
                 return;
             }
-        }catch{}
+        }catch(e){}
 
         await new Promise(r=>setTimeout(r,2000));
     }
