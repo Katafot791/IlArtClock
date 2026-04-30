@@ -121,7 +121,7 @@
 
 <div id="clockInfo">CLOCK --:--:-- | last sync: --</div>
 
-<button id="main-connect" class="btn-connect" onclick="connectNewDevice()">🔗 CONNECT DEVICE</button>
+<button id="main-connect" class="btn-connect" onclick="connect()">🔗 CONNECT DEVICE</button>
 
 <div class="double-buttons">
     <button class="btn-sync" onclick="syncTime()">🔄 SYNC TIME</button>
@@ -207,10 +207,11 @@ function updateClockInfo(){
         return;
     }
 
-    const clockNow = new Date(lastSyncTime + (Date.now() - lastSyncTime));
+    const elapsed = Date.now() - lastSyncTime;
+    const clockNow = new Date(Date.now() - elapsed);
 
     const t = clockNow.toTimeString().split(' ')[0];
-    const mins = Math.floor((Date.now()-lastSyncTime)/60000);
+    const mins = Math.floor(elapsed/60000);
 
     document.getElementById('clockInfo').innerText =
         `CLOCK ${t} | synced ${mins} min ago`;
@@ -224,7 +225,7 @@ setInterval(()=>{
 
 
 async function send(data){
-    if(!characteristic || !device.gatt.connected) return;
+    if(!characteristic) return;
 
     const t0 = performance.now();
     await characteristic.writeValue(new TextEncoder().encode(data));
@@ -241,7 +242,7 @@ async function send(data){
 }
 
 function syncTime(){
-    if(!characteristic || !device.gatt.connected) return;
+    if(!characteristic) return;
     const now = new Date();
     const str =
         now.getHours().toString().padStart(2,'0')+
@@ -274,86 +275,51 @@ function restoreState(){
             optionalServices:['0000ffe0-0000-1000-8000-00805f9b34fb']
         });
 
-        await startConnection(dev);
+        await startConnection();
 
     }catch(e){
         alert("Connection failed. Make sure the clock is nearby.");
     }
 }
 
-async function connectNewDevice(){
-    try{
-        const dev = await navigator.bluetooth.requestDevice({
-            filters: [{ name: 'Ilart_clock' }],
-            optionalServices: ['battery_service']
-        });
+async function startConnection(){
+    //if(device.gatt.connected) return;
+    const server = await device.gatt.connect();
+    const service = await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
+    characteristic = await service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
 
-        await startConnection(dev);
+    document.getElementById('status').innerText = "CONNECTED";
+    document.getElementById('status').style.color = "#00f7b0";
+    document.getElementById('main-connect').style.display = "none";
 
-    }catch(e){
-        console.log(e);
-    }
-}
+    restoreState();
+    syncTime();
 
-async function onDisconnected(){
-    console.log('BLE disconnected');
-
-    characteristic = null;
-    device = null;
-
-    document.getElementById('status').innerText = "RECONNECTING...";
-
-    await new Promise(r => setTimeout(r, 1000));
-    autoReconnect();
-}
-    
-async function startConnection(dev){
-    try{
-        const server = await dev.gatt.connect();
-        const service = await server.getPrimaryService('battery_service');
-        characteristic = await service.getCharacteristic('battery_level');
-
-        device = dev;
-
-        document.getElementById('status').innerText = 'CONNECTED';
-
-        dev.addEventListener('gattserverdisconnected', onDisconnected, { once:true });
-
-        restoreState();
-        syncTime();
-
-    }catch(e){
-        console.log(e);
-        throw e;
-    }
-}
-    
-    console.log('BLE disconnected');
-
-    // 💥 Сброс ВСЕГО старого состояния
-    characteristic = null;
-    device = null;
-
-    document.getElementById('status').innerText = "RECONNECTING...";
-
-    // Небольшая пауза, чтобы стек BLE в браузере «остыл»
-    await new Promise(r => setTimeout(r, 1000));
-
-    autoReconnect();
-}, { once: true }); // ВАЖНО
+    device.addEventListener('gattserverdisconnected', ()=>{
+        document.getElementById('status').innerText = "RECONNECTING...";
+        autoReconnect();
+    });
 }
 
 async function autoReconnect(){
     while(true){
         try{
-            const devices = await navigator.bluetooth.getDevices();
-            const known = devices.find(d=>d.name==='Ilart_clock');
-
-            if(known){
-                await startConnection(known);
+            if(device && device.gatt){
+                await startConnection();
                 return;
             }
-        }catch(e){}
+        }catch{}
+
+        // если старый device мёртв — ищем заново
+        try{
+            const devices = await navigator.bluetooth.getDevices();
+            const known = devices.find(d=>d.name==='Ilart_clock');
+            if(known){
+                device = known;
+                await startConnection();
+                return;
+            }
+        }catch{}
 
         await new Promise(r=>setTimeout(r,2000));
     }
@@ -402,7 +368,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         document.getElementById('btn-auto').classList.remove('active');
     });
 
-    c.('input', e=>{
+    c.addEventListener('input', e=>{
         const v = e.target.value;
         updateUI(v);
         send(String(v));
@@ -410,7 +376,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         document.getElementById('btn-auto').classList.remove('active');
     });
 
-    s.('input', e=>{
+    s.addEventListener('input', e=>{
         const v = e.target.value;
         updateSpeedLabel(v);
         send('T'+v);
