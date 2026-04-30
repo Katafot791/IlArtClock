@@ -169,7 +169,7 @@ let device=null, characteristic=null;
 const STATE_KEY='ilart_state';
 let deferredPrompt = null;
 
-window.addEventListener('beforeinstallprompt', (e) => {
+window.('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
 
@@ -297,7 +297,7 @@ async function startConnection(){
     restoreState();
     syncTime();
 
-    device.addEventListener('gattserverdisconnected', ()=>{
+    device.('gattserverdisconnected', ()=>{
     characteristic = null;   // ВАЖНО
     document.getElementById('status').innerText = "RECONNECTING...";
     autoReconnect();
@@ -307,18 +307,12 @@ async function startConnection(){
 async function autoReconnect(){
     while(true){
         try{
-            if(device){
-                await startConnection();
-                return;
-            }
-        }catch(e){}
-
-        try{
             const devices = await navigator.bluetooth.getDevices();
             const known = devices.find(d=>d.name==='Ilart_clock');
+
             if(known){
-                device = known;
-                await startConnection();
+                device = known;              // ← НОВЫЙ device
+                await startConnection();     // ← Новый GATT
                 return;
             }
         }catch(e){}
@@ -328,7 +322,7 @@ async function autoReconnect(){
 }
 
 // автоподключение без кнопки
-window.addEventListener('load', async ()=>{
+window.('load', async ()=>{
     try{
         const devices = await navigator.bluetooth.getDevices();
         const known = devices.find(d=>d.name==='Ilart_clock');
@@ -353,7 +347,7 @@ function updateUI(hueValue){
     document.getElementById('hueValue').innerText = hueValue;
 }
 
-document.addEventListener('DOMContentLoaded', ()=>{
+document.('DOMContentLoaded', ()=>{
     const b = document.getElementById('brightnessSlider');
     const c = document.getElementById('colorSlider');
     const s = document.getElementById('speedSlider');
@@ -362,7 +356,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     updateUI(c.value);
     updateSpeedLabel(s.value);
 
-    b.addEventListener('input', e=>{
+    b.('input', e=>{
         const v = e.target.value;
         updateBrightnessLabel(v);
         send('B'+v);
@@ -370,7 +364,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         document.getElementById('btn-auto').classList.remove('active');
     });
 
-    c.addEventListener('input', e=>{
+    c.('input', e=>{
         const v = e.target.value;
         updateUI(v);
         send(String(v));
@@ -378,7 +372,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         document.getElementById('btn-auto').classList.remove('active');
     });
 
-    s.addEventListener('input', e=>{
+    s.('input', e=>{
         const v = e.target.value;
         updateSpeedLabel(v);
         send('T'+v);
