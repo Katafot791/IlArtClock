@@ -281,10 +281,46 @@ function restoreState(){
     }
 }
 
-async function startConnection(){
-    //if(device.gatt.connected) return;
-    if (device.gatt.connected) {
-    await device.gatt.disconnect();
+async function connectNewDevice(){
+    device = await navigator.bluetooth.requestDevice({
+        filters: [{ name: 'Ilart_clock' }],
+        optionalServices: ['battery_service']
+    });
+
+    await startConnection(device);
+}
+
+async function onDisconnected(){
+    console.log('BLE disconnected');
+
+    characteristic = null;
+    device = null;
+
+    document.getElementById('status').innerText = "RECONNECTING...";
+
+    await new Promise(r => setTimeout(r, 1000));
+    autoReconnect();
+}
+    
+async function startConnection(dev){
+    try{
+        const server = await dev.gatt.connect();
+        const service = await server.getPrimaryService('battery_service');
+        characteristic = await service.getCharacteristic('battery_level');
+
+        device = dev;
+
+        document.getElementById('status').innerText = 'CONNECTED';
+
+        dev.addEventListener('gattserverdisconnected', onDisconnected, { once:true });
+
+        restoreState();
+        syncTime();
+
+    }catch(e){
+        console.log(e);
+        throw e;
+    }
 }
     const server = await device.gatt.connect();
     const service = await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
@@ -320,8 +356,7 @@ async function autoReconnect(){
             const known = devices.find(d=>d.name==='Ilart_clock');
 
             if(known){
-                device = known;              // ← НОВЫЙ device
-                await startConnection();     // ← Новый GATT
+                await startConnection(known);
                 return;
             }
         }catch(e){}
