@@ -121,7 +121,7 @@
 
 <div id="clockInfo">CLOCK --:--:-- | last sync: --</div>
 
-<button id="main-connect" class="btn-connect" onclick="connectNewDevice()">🔗 CONNECT DEVICE</button>
+<button id="main-connect" class="btn-connect" onclick="()">🔗 CONNECT DEVICE</button>
 
 <div class="double-buttons">
     <button class="btn-sync" onclick="syncTime()">🔄 SYNC TIME</button>
@@ -282,12 +282,17 @@ function restoreState(){
 }
 
 async function connectNewDevice(){
-    device = await navigator.bluetooth.requestDevice({
-        filters: [{ name: 'Ilart_clock' }],
-        optionalServices: ['battery_service']
-    });
+    try{
+        const dev = await navigator.bluetooth.requestDevice({
+            filters: [{ name: 'Ilart_clock' }],
+            optionalServices: ['battery_service']
+        });
 
-    await startConnection(device);
+        await startConnection(dev);
+
+    }catch(e){
+        console.log(e);
+    }
 }
 
 async function onDisconnected(){
